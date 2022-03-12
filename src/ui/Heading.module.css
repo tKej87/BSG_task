@@ -1,0 +1,64 @@
+.heading {
+  color: #ffffff;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.heading_error {
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.heading_main {
+  color: #000000;
+  font-size: 2rem;
+}
+.heading_category {
+  font-weight: 600;
+}
+
+.heading_movie-title {
+  cursor: pointer;
+  color: #000000;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.heading_clickable {
+  cursor: pointer;
+}
+
+.heading_clickable:hover {
+  -webkit-transform: scale(1.2);
+  -o-transform: scale(1.2);
+  -ms-transform: scale(1.2);
+  -moz-transform: scale(1.2);
+  transform: scale(1.2);
+}
+
+@media only screen and (min-width: 724px) {
+  .heading {
+    font-size: 1.2rem;
+  }
+  .heading_main {
+    font-size: 3rem;
+  }
+  .heading_movie-title,
+  .heading_error {
+    font-size: 1rem;
+  }
+}
+
+@media only screen and (min-width: 1020px) {
+  .heading {
+    font-size: 1.4rem;
+  }
+  .heading_main {
+    font-size: 4rem;
+  }
+  .heading_movie-title,
+  .heading_error {
+    font-size: 1.2rem;
+  }
+}

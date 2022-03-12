@@ -1,0 +1,53 @@
+.control-group {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.control-group__label {
+  text-align: left;
+  width: 90%;
+  margin-bottom: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ece5f3;
+  padding: 0 5px;
+
+}
+
+.control-group__insert {
+  width: 90%;
+  display: flex;
+  align-items: center;
+  background-color: #ece5f3;
+  border: 1px solid #581997;
+  padding: 6px 4px;
+}
+.control-group__icon {
+  color: #581997;
+  margin-right: 5px;
+}
+
+.control-group__input {
+  width: 90%;
+  border: 0;
+  background-color: transparent;
+}
+
+.control-group__input:focus,
+.control-group__input:active {
+  outline: none;
+  border-bottom: 1px solid #7d4cae;
+}
+
+@media only screen and (min-width: 724px) {
+  .control-group__label {
+    font-size: 1.2rem;
+  }
+}
+
+@media only screen and (min-width: 1020px) {
+}

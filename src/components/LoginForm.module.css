@@ -1,0 +1,44 @@
+.control-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.control-group__btn {
+  width: 90%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.control-group__btn button {
+  cursor: pointer;
+  background-color: gray;
+  border: none;
+  border-radius: 35px;
+  padding: 10px 20px;
+  color: #ece5f3;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 2px 0;
+}
+.control-group__btn_active button:hover {
+  margin: 0;
+  border: 2px solid #310062;
+  background-color: #ece5f3;
+  color: #310062;
+}
+
+.control-group__btn_active button {
+  background-color: #310062;
+}
+
+@media only screen and (min-width: 724px) {
+}
+
+@media only screen and (min-width: 1020px) {
+  .control-group__btn button {
+    padding: 10px 40px;
+    font-size: 1.1rem;
+  }
+}

@@ -1,0 +1,23 @@
+.control-group {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+}
+
+.control-group__button {
+  cursor: pointer;
+  margin: 20px;
+  font-size: 1.2rem;
+  color: #ece5f3;
+}
+
+@media only screen and (min-width: 724px) {
+  .control-group__button {
+    margin: 30px;
+    font-size: 1.5rem;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+}

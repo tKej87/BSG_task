@@ -1,0 +1,25 @@
+.single-video {
+  margin: 0 5px;
+  text-align: center;
+}
+
+.single-video__image {
+  width: 160px;
+  height: 90px;
+}
+
+.single-video__image img {
+  width: 100%;
+  height: 100%;
+}
+
+@media only screen and (min-width: 724px) {
+  .single-video__image {
+    width: 320px;
+    height: 160px;
+
+  }
+}
+
+@media only screen and (min-width: 1020px) {
+}
