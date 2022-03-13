@@ -1,7 +1,7 @@
 import { FC, Fragment, useState } from "react";
 import Heading from "../ui/Heading";
 import styles from "./SingleVideo.module.css";
-import VideoPlayer from "./VideoPlayer";
+import VideoModal from "./VideoModal";
 
 const SingleVideo: FC<{ title: string; cover: string | undefined; id: number }> = (props) => {
   const [playerVisible, setPlayervisible] = useState(false);
@@ -18,12 +18,13 @@ const SingleVideo: FC<{ title: string; cover: string | undefined; id: number }> 
   return (
     <Fragment>
       <div className={styles["single-video"]} onClick={showPlayer}>
-        <div className={styles["single-video__image"]}>
-          <img alt={props.title} src={imageSrc} />
-        </div>
+        <div
+          className={styles["single-video__image"]}
+          style={{ backgroundImage: `url(${imageSrc})` }}
+        />
         <Heading type="movie-title" text={props.title} />
       </div>
-      {playerVisible && <VideoPlayer onClose={hidePlayer} id={props.id}/>}
+      {playerVisible && <VideoModal onClose={hidePlayer} id={props.id} />}
     </Fragment>
   );
 };

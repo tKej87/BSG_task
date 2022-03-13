@@ -1,9 +1,11 @@
-import { FC, useCallback, useContext, useEffect, useState } from "react";
+import { FC, Fragment, useCallback, useContext, useEffect, useState } from "react";
 import Heading from "../ui/Heading";
 import SingleVideo from "./SingleVideo";
 import styles from "./Category.module.css";
 import useHttp from "../hooks/useHttp";
 import { AuthContext } from "../store/auth-context";
+import Spinner from "../ui/Spinner";
+import ErrorMsg from "../ui/ErrorMsg";
 
 interface RequestObject {
   url: string;
@@ -17,7 +19,6 @@ interface RequestObject {
     PageSize: number;
   };
 }
-
 interface Entity {
   Id: number;
   MediaTypeCode: string;
@@ -34,6 +35,8 @@ const Category: FC<{
 }> = (props) => {
   const [videos, setVideos] = useState<(Entity | undefined)[]>();
   const [listIndex, setListIndex] = useState<number>(props.categoryID);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState<string>("");
   const authCtx = useContext(AuthContext);
   const httpRequest = useHttp();
   const apiRequest = httpRequest.apiRequest;
@@ -41,85 +44,83 @@ const Category: FC<{
   if (listIndex > 7) {
     setListIndex(2);
   }
-  console.log(listIndex);
-  const getVideos = useCallback(
-    (listIndex: number) => {
-      const requestData = {
+
+  const successHandler = useCallback(
+    (data: ResponseData) => {
+      const videoContnent = ["VOD", "LIVE", "SERIES"];
+      const onlyVideos = data.Entities.filter((el) => videoContnent.includes(el.MediaTypeCode));
+      //check if the function was set for the first time
+      if (listIndex === props.categoryID) {
+        setVideos(onlyVideos);
+        //check if list is long eneough
+        if (onlyVideos.length < 15) {
+          setListIndex(listIndex + 1);
+        }
+      } else {
+        const newVideos = videos?.concat(onlyVideos);
+        const uniqueVideos = Array.from(new Set(newVideos?.map((el) => el!.Id))).map((id) =>
+          newVideos?.find((el) => el!.Id === id)
+        );
+        setVideos(uniqueVideos);
+        //check if list is long eneough
+        if (uniqueVideos.length < 15) {
+          setListIndex(listIndex + 1);
+        }
+      }
+      setLoading(false);
+    },
+    [listIndex, props.categoryID, videos]
+  );
+  const errorHandler = useCallback((error: Error) => {
+    setErrorMsg(JSON.stringify(error.message));
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    const request: RequestObject = {
+      url: "Media/GetMediaList",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${authCtx.token}` },
+      data: {
         MediaListId: listIndex,
         IncludeCategories: false,
         IncludeImages: true,
         IncludeMedia: false,
         PageNumber: 1,
         PageSize: 15,
-      };
-      const successHandler = (data: ResponseData) => {
-        const videoContnent = ["VOD", "LIVE", "SERIES"];
-        const onlyVideos = data.Entities.filter((el) => videoContnent.includes(el.MediaTypeCode));
-        const uniqueVideos = Array.from(new Set(onlyVideos?.map((el) => el.Id))).map((id) =>
-          onlyVideos?.find((el) => el.Id === id)
-        );
-        setListIndex(listIndex + 1);
-        //check if the function was set for the first time
-        if (listIndex === props.categoryID) {
-          setVideos(uniqueVideos);
-          // if (uniqueVideos.length < 15) {
-          //   setListIndex(listIndex + 1);
-          // }
-        } else {
-          const newArray = videos?.concat(uniqueVideos);
-          setVideos(newArray);
-          // if (newArray!.length < 15) {
-          //   setListIndex(listIndex + 1);
-          // }
-        }
-        //check if list is long eneough
-    
-      };
-      const errorHandler = (error: number) => {
-        console.log(error);
-      };
-      const request: RequestObject = {
-        url: "Media/GetMediaList",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${authCtx.token}` },
-        data: requestData,
-      };
-      apiRequest(request, successHandler, errorHandler);
-    },
-    [apiRequest, authCtx.token, props.categoryID, videos]
-  );
-  console.log(listIndex);
-  useEffect(() => {
-    getVideos(listIndex);
-  }, []);
-  
-  useEffect(() => {
-    console.log(videos?.length)
-    if (videos && videos?.length < 15) {
-      getVideos(listIndex);
-    }
+      },
+    };
+    setLoading(true);
+    apiRequest(request, successHandler, errorHandler);
   }, [listIndex]);
-
-  // const uniqueVideos = Array.from(new Set(videos?.map((el) => el.Id))).map((id) =>
-  //   videos?.find((el) => el.Id === id)
-  // );
 
   return (
     <div className={styles["category"]}>
-      <div className={styles["category__title"]}>
-        <Heading type="category" text={`Movies from list no ${props.categoryID}`} />
-        <p>{"only: " + videos?.length || 0}</p>
-        <p>{"unique: " + videos?.length || 0}</p>
-      </div>
-      <div className={styles["category__slider"]}>
-        {videos &&
-          videos.map((el, i) => {
-            const image = el!.Images.find((image) => image.ImageTypeCode === "FRAME");
-            const displayed = i < 15 && (
-              <SingleVideo key={el!.Id} title={el!.Title} cover={image?.Url} id={el!.Id} />
-            );
-            return displayed;
-          })}
-      </div>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <Fragment>
+          <div className={styles["category__title"]}>
+            {errorMsg ? (
+              <ErrorMsg message={errorMsg} />
+            ) : (
+              <Heading
+                type="category"
+                text={`Movies from lists no ${props.categoryID} to no ${listIndex}`}
+              />
+            )}
+          </div>
+          <div className={styles["category__slider"]}>
+            {videos &&
+              videos.map((el, i) => {
+                const image = el!.Images.find((image) => image.ImageTypeCode === "FRAME");
+                const displayedVideos = i < 15 && (
+                  <SingleVideo key={el!.Id} title={el!.Title} cover={image?.Url} id={el!.Id} />
+                );
+                return displayedVideos;
+              })}
+          </div>
+        </Fragment>
+      )}
     </div>
   );
 };

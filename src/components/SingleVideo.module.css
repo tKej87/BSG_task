@@ -6,6 +6,7 @@
 .single-video__image {
   width: 160px;
   height: 90px;
+  background-size: cover;
 }
 
 .single-video__image img {

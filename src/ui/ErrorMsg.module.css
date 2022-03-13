@@ -1,0 +1,20 @@
+.message {
+  color: #E97451;
+  font-weight: 600;
+  font-style: italic;
+  font-size: 0.8rem;
+  text-align: center;
+  /* text-shadow: 1px 1px 10px #ffffff, -1px -1px 10px #ffffff; */
+}
+
+@media only screen and (min-width: 724px) {
+  .message {
+    font-size: 1rem;
+  }
+}
+
+@media only screen and (min-width: 1020px) {
+  .message {
+    font-size: 1.2rem;
+  }
+}
