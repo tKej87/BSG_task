@@ -1,4 +1,4 @@
-import { FC, Fragment, useCallback, useContext, useEffect, useState } from "react";
+import { FC, Fragment, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import Heading from "../ui/Heading";
 import SingleVideo from "./SingleVideo";
 import styles from "./Category.module.css";
@@ -44,7 +44,6 @@ const Category: FC<{
   if (listIndex > 7) {
     setListIndex(2);
   }
-
   const successHandler = useCallback(
     (data: ResponseData) => {
       const videoContnent = ["VOD", "LIVE", "SERIES"];
@@ -57,27 +56,29 @@ const Category: FC<{
           setListIndex(listIndex + 1);
         }
       } else {
-        const newVideos = videos?.concat(onlyVideos);
-        const uniqueVideos = Array.from(new Set(newVideos?.map((el) => el!.Id))).map((id) =>
-          newVideos?.find((el) => el!.Id === id)
-        );
-        setVideos(uniqueVideos);
+        setVideos((currentVideos) => {
+          const newVideos = currentVideos?.concat(onlyVideos);
+          const uniqueVideos = Array.from(new Set(newVideos?.map((el) => el!.Id))).map((id) =>
+            newVideos?.find((el) => el!.Id === id)
+          );
+          if (uniqueVideos.length < 15) {
+            setListIndex(listIndex + 1);
+          }
+          return uniqueVideos;
+        });
         //check if list is long eneough
-        if (uniqueVideos.length < 15) {
-          setListIndex(listIndex + 1);
-        }
       }
       setLoading(false);
     },
-    [listIndex, props.categoryID, videos]
+    [listIndex, props.categoryID]
+    //callback is missing dependency, but unfortunately I couldn't find better solution for the code I wanted to develop
   );
   const errorHandler = useCallback((error: Error) => {
     setErrorMsg(JSON.stringify(error.message));
     setLoading(false);
   }, []);
-
-  useEffect(() => {
-    const request: RequestObject = {
+  const request: RequestObject = useMemo(
+    () => ({
       url: "Media/GetMediaList",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${authCtx.token}` },
       data: {
@@ -88,10 +89,14 @@ const Category: FC<{
         PageNumber: 1,
         PageSize: 15,
       },
-    };
+    }),
+    [listIndex, authCtx.token]
+  );
+
+  useEffect(() => {
     setLoading(true);
     apiRequest(request, successHandler, errorHandler);
-  }, [listIndex]);
+  }, [apiRequest, request, successHandler, errorHandler]);
 
   return (
     <div className={styles["category"]}>
@@ -100,12 +105,15 @@ const Category: FC<{
       ) : (
         <Fragment>
           <div className={styles["category__title"]}>
+            <p>{videos && videos.length}</p>
             {errorMsg ? (
               <ErrorMsg message={errorMsg} />
             ) : (
               <Heading
                 type="category"
-                text={`Movies from lists no ${props.categoryID} to no ${listIndex}`}
+                text={`Movies from list${props.categoryID !== listIndex && "s"} no ${
+                  props.categoryID
+                }  ${props.categoryID !== listIndex && "to no " + listIndex}`}
               />
             )}
           </div>
@@ -126,3 +134,28 @@ const Category: FC<{
 };
 
 export default Category;
+
+// useEffect( () => {
+//   async function fetchData() {
+//     const promise = await fetch(`test.json`);
+//     const result = await promise.json();
+//     const newForm = {...form};
+//     newForm.data = result;
+//     setForm(newForm);
+//     console.log('executed');
+//   }
+//   fetchData();
+// }, [])
+// useEffect( () => {
+//   async function fetchData() {
+//     const promise = await fetch(`test.json`);
+//     const result = await promise.json();
+//     setForm(currentForm => {
+//       const newForm = {...currentForm};
+//       newForm.data = result;
+//       return newForm;
+//     });
+//     console.log('executed');
+//   }
+//   fetchData();
+// }, []
