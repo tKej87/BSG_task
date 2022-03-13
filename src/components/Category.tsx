@@ -51,7 +51,6 @@ const Category: FC<{
       //check if the function was set for the first time
       if (listIndex === props.categoryID) {
         setVideos(onlyVideos);
-        //check if list is long eneough
         if (onlyVideos.length < 15) {
           setListIndex(listIndex + 1);
         }
@@ -66,12 +65,10 @@ const Category: FC<{
           }
           return uniqueVideos;
         });
-        //check if list is long eneough
       }
       setLoading(false);
     },
     [listIndex, props.categoryID]
-    //callback is missing dependency, but unfortunately I couldn't find better solution for the code I wanted to develop
   );
   const errorHandler = useCallback((error: Error) => {
     setErrorMsg(JSON.stringify(error.message));
@@ -105,7 +102,6 @@ const Category: FC<{
       ) : (
         <Fragment>
           <div className={styles["category__title"]}>
-            <p>{videos && videos.length}</p>
             {errorMsg ? (
               <ErrorMsg message={errorMsg} />
             ) : (
@@ -134,28 +130,3 @@ const Category: FC<{
 };
 
 export default Category;
-
-// useEffect( () => {
-//   async function fetchData() {
-//     const promise = await fetch(`test.json`);
-//     const result = await promise.json();
-//     const newForm = {...form};
-//     newForm.data = result;
-//     setForm(newForm);
-//     console.log('executed');
-//   }
-//   fetchData();
-// }, [])
-// useEffect( () => {
-//   async function fetchData() {
-//     const promise = await fetch(`test.json`);
-//     const result = await promise.json();
-//     setForm(currentForm => {
-//       const newForm = {...currentForm};
-//       newForm.data = result;
-//       return newForm;
-//     });
-//     console.log('executed');
-//   }
-//   fetchData();
-// }, []
